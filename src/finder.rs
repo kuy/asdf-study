@@ -25,6 +25,26 @@ pub(crate) fn get_first_not_black_x(
     Some(x)
 }
 
+pub(crate) fn get_next_black_x(buf: &RgbImage, x_start: u32, y: u32, black: u32) -> u32 {
+    let width = buf.width();
+    let mut x = x_start + 1;
+
+    while x < width {
+        let pixel = buf.get_pixel(x, y);
+        if to_gray(pixel) <= black {
+            break; // found black pixel
+        }
+
+        x += 1;
+
+        if width <= x {
+            return width - 1;
+        }
+    }
+
+    x - 1
+}
+
 pub(crate) fn get_first_not_black_y(
     buf: &RgbImage,
     x: u32,
@@ -102,6 +122,32 @@ mod tests {
         // NOTE: This spec is wiered, but same with original
         let actual = get_first_not_black_x(&buf, 6, 0, 16);
         assert_eq!(actual, Some(6), "out of bounds");
+    }
+
+    #[test]
+    fn test_get_next_black_x() {
+        let data = [
+            255, 255, 255, //
+            196, 196, 196, //
+            16, 16, 16, //
+            64, 64, 64, //
+            8, 8, 8, //
+            196, 196, 196, //
+            196, 196, 196, //
+        ];
+        let buf: RgbImage = ImageBuffer::from_raw(7, 1, Vec::from(&data[..])).unwrap();
+
+        let actual = get_next_black_x(&buf, 0, 0, 16);
+        assert_eq!(actual, 1);
+
+        let actual = get_next_black_x(&buf, 2, 0, 16);
+        assert_eq!(actual, 3, "same with initial position");
+
+        let actual = get_next_black_x(&buf, 5, 0, 16);
+        assert_eq!(actual, 6, "not found");
+
+        let actual = get_next_black_x(&buf, 6, 0, 16);
+        assert_eq!(actual, 6, "out of bounds");
     }
 
     #[test]
