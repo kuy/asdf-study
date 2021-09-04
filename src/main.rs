@@ -1,5 +1,7 @@
 mod finder;
 
+const BLACK: u32 = 32;
+
 fn main() {
     let img = image::open("ASDFPixelSort/pic.jpg").unwrap();
     let mut buf = img.to_rgb8();
@@ -16,12 +18,12 @@ fn sort_column(buf: &mut image::RgbImage, x: u32) {
     let mut y_end = 0;
 
     while y_end < buf.height() - 1 {
-        y = match finder::get_first_not_black_y(buf, x, y) {
+        y = match finder::get_first_not_black_y(buf, x, y, BLACK) {
             Some(y) => y,
             _ => break,
         };
 
-        y_end = finder::get_next_black_y(buf, x, y);
+        y_end = finder::get_next_black_y(buf, x, y, BLACK);
 
         let len = y_end - y;
         let mut line = Vec::with_capacity(len as usize);
