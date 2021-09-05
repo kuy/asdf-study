@@ -6,3 +6,4 @@ edition = "2018"
 [dependencies]
 image = { version = "0.23.14", default-features = false, features = ["jpeg", "png"] }
 asdf-pixel-sort = { path = "../asdf-pixel-sort" }
+once_cell = "1.8.0"
